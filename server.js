@@ -15,15 +15,18 @@ app.get("/", (req, res) => {
 });
 
 app.get("/photos", async (req, res) => {
-  const API = `https://api.unsplash.com/search/photos/?client_id=${process.env.ACCESS_KEY}&query=goat`;
+  const { searchQuery } = req.query;
+  const unsplashAccessKey = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
+  const API = `https://api.unsplash.com/search/photos/?client_id=${unsplashAccessKey}&query=${encodeURIComponent(
+    searchQuery
+  )}`;
 
   try {
     const response = await axios.get(API);
     const photos = response.data.results.map((photo) => ({
       id: photo.id,
-      img_url: photo.urls.regular,
-      original_image: photo.links.self,
-      photographer: photo.user.name,
+      img_url: photo.urls.small,
+      alt_description: photo.alt_description,
     }));
 
     res.json(photos);
